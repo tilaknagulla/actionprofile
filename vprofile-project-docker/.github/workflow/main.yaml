@@ -16,8 +16,9 @@ Testing:
 runs-on: ubuntu-latest
 nees: Build
 steps:
+
   - name: Run tests on main branches
-    run:mvn install
+    run: mvn install
 
   - name: Checkstyle
     run: mvn checkstyle:checkstyle 
