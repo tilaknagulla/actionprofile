@@ -6,6 +6,8 @@ on:
    pull_request:
      branches:
       - main
+   Permissions:
+     contents: read
 
 jobs:
   Build:
@@ -17,6 +19,15 @@ jobs:
           fetch-depth: 0
       - name: Maven Build
         run: mvn install
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vprofile-app
+          path: target/*.war
+      - name: Notify if build fails
+        if: failure()
+        run: echo "Build failed. Please check the logs for details."
 
 
   Testing:
