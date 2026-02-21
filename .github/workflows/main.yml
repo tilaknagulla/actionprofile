@@ -11,10 +11,12 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: "10 14 * * 1-5"   # After noon 2:10 pm, Mondat to Friday
+    - cron: "10 14 * * 1-5"   # After noon 2:10 pm, Monday to Friday
 
 env:
-  ECR_REPOSITORY: 'vprofile-appimag
+  ECR_REPOSITORY: 'vprofile-appimage'
+
+  
 permissions: 
   contents: read
 
@@ -91,7 +93,7 @@ jobs:
     name: BUILD_AND_PUBLISH
     runs-on: ubuntu-latest
     environment: Production
-    needs: [Build, Testing, Security_Scan]
+    needs: [Build, Testing, Security_Scan]    
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Code checkout
@@ -99,13 +101,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure AWS credentials
+      - name:  Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
-
+      
       - name: Login to Amazon ECR
         id: login-ecr 
         uses: aws-actions/amazon-ecr-login@v2
@@ -118,3 +120,6 @@ jobs:
         run: |
           docker build -f Docker-files/app/multistage/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        
+
+  
